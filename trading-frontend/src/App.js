@@ -1,23 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import StockChart from "./components/StockChart";
+import TradingViewChart from "./components/TradingViewChart";
 
 function App() {
+  const [stocks, setStocks] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://127.0.0.1:8000/api/stocks/")
+      .then((response) => {
+        setStocks(response.data);
+      })
+      .catch((error) => {
+        console.error("There was an error fetching the stocks!", error);
+      });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <ul>
+        {stocks.map((stock) => (
+          <li key={stock.id}>
+            {stock.symbol} - {stock.name} : ${stock.current_price}
+          </li>
+        ))}
+      </ul>
+      <h1>גרף מניות</h1>
+      <StockChart data={stockData} />
+      <h1>Stock Market Simulation</h1>
+      <TradingViewChart />
     </div>
   );
 }
